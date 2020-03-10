@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zing.TwilioFlexAuthenticationHandler", "Zing.TwilioFlexAuthenticationHandler\Zing.TwilioFlexAuthenticationHandler.csproj", "{D95B7028-64AE-4430-8E42-9C379F52ABB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zing.TwilioFlexAuthenticationHandler", "Zing.TwilioFlexAuthenticationHandler\Zing.TwilioFlexAuthenticationHandler.csproj", "{D95B7028-64AE-4430-8E42-9C379F52ABB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTwilioFlexAuthenticationHandler", "Zing.TwilioFlexAuthenticationHandler.Tests\TestTwilioFlexAuthenticationHandler.csproj", "{1030405C-317A-4B7B-8426-70B92384D7BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D95B7028-64AE-4430-8E42-9C379F52ABB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D95B7028-64AE-4430-8E42-9C379F52ABB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D95B7028-64AE-4430-8E42-9C379F52ABB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1030405C-317A-4B7B-8426-70B92384D7BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1030405C-317A-4B7B-8426-70B92384D7BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1030405C-317A-4B7B-8426-70B92384D7BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1030405C-317A-4B7B-8426-70B92384D7BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
