@@ -6,23 +6,25 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Zing.TwilioFlexAuthenticationHandler.Service;
 using static Zing.TwilioFlexAuthenticationHandler.Constants;
 
+[assembly: InternalsVisibleTo("TestTwilioFlexAuthenticationHandler")]
 namespace Zing.TwilioFlexAuthenticationHandler
 {
     /// <summary>
     /// An implementation of AuthenticationHandler intended to manage authentication via a Twilio Flex JWT
     /// </summary>
+    
     public class TwilioFlexAuthenticationHandler : AuthenticationHandler<TwilioFlexAuthenticationOptions>
     {
         private const int MAX_CACHE_TIME_IN_MINUTES = 15;
 
         private readonly IMemoryCache cache;
-        private readonly ITwilioIdentityApiService identityService;
 
         /// <summary>
         /// Constructor returning an instance of TwilioFlexAuthenticationHandler
@@ -32,30 +34,25 @@ namespace Zing.TwilioFlexAuthenticationHandler
         /// <param name="encoder"></param>
         /// <param name="clock"></param>
         /// <param name="cache"></param>
-        /// <param name="identityService"></param>
         public TwilioFlexAuthenticationHandler(
             IOptionsMonitor<TwilioFlexAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            IMemoryCache cache,
-            ITwilioIdentityApiService identityService) : base(options, logger, encoder, clock)
+            IMemoryCache cache) : base(options, logger, encoder, clock)
         {
             this.cache = cache;
-            this.identityService = identityService;
         }
 
-        /// <summary>
-        /// Using information from the request context, checks if the authorization can be
-        /// validated as a Twilio Flex token
-        /// </summary>
-        /// <returns><see cref="AuthenticateResult"/></returns>
         protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            if (string.IsNullOrWhiteSpace(Options.AccountSID)) throw new ArgumentException("Options missing AccountSID", Options.AccountSID);
+            if (string.IsNullOrWhiteSpace(Options.AuthToken)) throw new ArgumentException("Options missing AuthToken", Options.AuthToken);
+
             if (Request.Headers.TryGetValue(HeaderNames.Authorization, out var authHeaders))
             {
                 const string cachePrefix = "flex:token:";
-                
+
                 string tokenPrefix = Options.TokenPrefix != null ? $"{Options.TokenPrefix} " : "Bearer ";
                 var authHeader = authHeaders.FirstOrDefault(e => e.StartsWith(tokenPrefix, StringComparison.InvariantCultureIgnoreCase));
                 if (!string.IsNullOrWhiteSpace(authHeader))
@@ -72,7 +69,7 @@ namespace Zing.TwilioFlexAuthenticationHandler
                     }
 
                     //no values in cache, call API to validate token
-                    var introspectResult = await identityService.ValidateTokenAsync(accessToken);
+                    var introspectResult = await TwilioIdentityApiService.ValidateTokenAsync(accessToken, Options.AccountSID, Options.AuthToken);
                     if (introspectResult != null && introspectResult.IsValid && introspectResult.ExpiresAtUtc.HasValue && introspectResult.ExpiresAtUtc.Value > DateTime.UtcNow)
                     {
                         //generate claims

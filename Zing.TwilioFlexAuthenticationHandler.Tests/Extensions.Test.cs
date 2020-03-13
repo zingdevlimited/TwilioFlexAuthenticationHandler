@@ -1,38 +1,37 @@
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using Zing.TwilioFlexAuthenticationHandler;
-using Zing.TwilioFlexAuthenticationHandler.Service;
 
 namespace TestTwilioFlexAuthenticationHandler
 {
     [TestClass]
     public class ExtensionsTest
     {
-        private Mock<IServiceCollection> services;
-        private IConfiguration configuration;
-
-        [TestInitialize]
-        public void Setup()
-        {
-            services = new Mock<IServiceCollection>();
-        }
-
         [TestMethod]
-        public void AddTwilioFlexThrowsArgumentExceptionForMissingTwilioSection()
+        public void AddTwilioFlexConfiguresAuthenticationScheme()
         {
-            var configuration = new Mock<IConfiguration>().Object;
+            var serviceCollection = new ServiceCollection();
+            var authBuilder = new Mock<AuthenticationBuilder>(serviceCollection);
+            authBuilder
+                .Setup(b => b.AddScheme<TwilioFlexAuthenticationOptions, TwilioFlexAuthenticationHandler>(
+                    It.IsAny<string>(),
+                    It.IsAny<Action<TwilioFlexAuthenticationOptions>>()))
+                .Returns<AuthenticationBuilder>(null)
+                .Verifiable();
 
-            Assert.ThrowsException<ArgumentNullException>(() => services.Object.AddTwilioFlex("Bearer", options => { }, configuration), $"Missing section '{nameof(TwilioSettings)}' in configuration.");
-        }
+            authBuilder.Object
+                .AddTwilioFlex("Bearer", options =>
+                {
+                    options.TokenPrefix = "Bearer";
+                    options.AccountSID = "12345";
+                    options.AuthToken = "Testing";
+                });
 
-        [TestMethod]
-        public void AddTwilioFlexThrowsArgumentExceptionForMissingTwilioSettings()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() => services.Object.AddTwilioFlex("Bearer", options => { }, configuration), $"Missing section '{nameof(TwilioSettings)}' in configuration.");
+            authBuilder.Verify();
         }
     }
 }

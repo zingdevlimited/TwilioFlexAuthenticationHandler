@@ -9,5 +9,15 @@ namespace Zing.TwilioFlexAuthenticationHandler
         /// E.g. 'Bearer'
         /// </summary>
         public string TokenPrefix { get; set; }
+
+        /// <summary>
+        /// The account SID for the Twilio project you are handling Flex tokens from
+        /// </summary>
+        public string AccountSID { get; set; }
+
+        /// <summary>
+        /// The auth token for the Twilio project you are handling Flex tokens from
+        /// </summary>
+        public string AuthToken { get; set; }
     }
 }
